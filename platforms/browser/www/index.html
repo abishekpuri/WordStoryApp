@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title></title>
+    <title>Word Story</title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -12,22 +12,76 @@
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
-    <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
-
-    <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
-
-    <!-- your app's js -->
     <script src="js/app.js"></script>
+    <script src="js/jquery-2.2.3.js"></script>
+    <script>
+    $(document).ready(function() {
+      setTimeout(function() {
+        $(".word_story").animate({ 'marginBottom': '-300px' }, 1000);
+      }, 2000);
+    });
+    </script>
   </head>
   <body ng-app="starter" class="platform-browser platform-cordova platform-webview">
-    <ion-pane>
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">HELLO!!</h1>
-      </ion-header-bar>
-      <ion-content>
-      </ion-content>
-    </ion-pane>
+    <ion-nav-view class="slide-left-right"></ion-nav-view>
+    <script id="start.html" type="text/ng-template">
+      <ion-view class="background" title="Home">
+        <ion-content class="padding" overflow-scroll="false">
+          <div class="word_story_title">
+            <img class="word_story" src="img/word_story.png">
+          </div>
+          <a class="button start_button" ui-sref="signup">Start!</a>
+        </ion-content>
+      </ion-view>
+    </script>
+    <script id="signup.html" type="text/ng-template">
+      <ion-view class="background" title="Sign Up">
+        <ion-content class="padding">
+          <div class="list list-inset">
+            <label class="item item-input">
+              <input type="text" ng-model="nick.name" placeholder="Nickname">
+            </label>
+          </div>
+          <a class="button" ui-sref="home">Cancel</a>
+          <a class="button" ng-click="submit_nick()" ui-sref="menu">Submit</a>
+        </ion-content>
+      </ion-view>
+    </script>
+    <script id="menu.html" type="text/ng-template">
+      <ion-view class="background" title="Menu">
+        <ion-content class="padding">
+          <a class="button" ui-sref="game-choice">Play Game</a>
+          <a class="button" ui-sref="home">How to Play</a>
+          <a class="button" ui-sref="home">Options</a>
+          <a class="button" ui-sref="home">Player Stats</a>
+        </ion-content>
+      </ion-view>
+    </script>
+    <script id="game-choice.html" type="text/ng-template">
+      <ion-view class="background" title="Menu">
+        <ion-content class="padding">
+          <a class="button" ui-sref="create-game">Host</a>
+          <a class="button" ui-sref="home">Join</a>
+        </ion-content>
+      </ion-view>
+    </script>
+    <script id="create-game.html" type="text/ng-template">
+      <ion-view class="background" title="Menu">
+        <ion-content class="padding">
+          <div class="list">
+            <label class="item item-input">
+              <span class="input-label">Game Type</span>
+              <input type="text" placeholder="Game type">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Word Limit</span>
+              <input type="text" placeholder="Word limit">
+            </label>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
   </body>
 </html>
