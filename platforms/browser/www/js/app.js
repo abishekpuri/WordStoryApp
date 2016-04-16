@@ -4,6 +4,8 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 var app = angular.module('starter', ['ionic'])
+var current_player_id = null;
+var current_game_id = null;
 
 app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -26,7 +28,8 @@ app.config(function($stateProvider, $urlRouterProvider) {
   })
   .state('create-game', {
     url: '/create-game',
-    templateUrl: 'create-game.html'
+    templateUrl: 'create-game.html',
+    controller: 'create_game_controller'
   })
 
   $urlRouterProvider.otherwise("/start");
@@ -40,10 +43,42 @@ app.controller('signup_controller', function($scope, $http) {
     $http.post('https://hackust2016.herokuapp.com/create_player', { "nickname": $scope.nick.name })
     .then(function(result) {
       console.log("Result: " + JSON.stringify(result.data));
+      current_player_id = result.data.player_id;
     }, function(error) {
       console.log("error: " + JSON.stringify(error));
     });
   };
+});
+
+app.controller('create_game_controller', function($scope, $http) {
+  $scope.game = {
+    type: "",
+    topic: "",
+    time_limit: "",
+    word_limit: "",
+    player_limit: "",
+    turn_limit: "",
+    passphrase: "",
+  };
+
+  $scope.submit_game_options = function() {
+    $http.post('https://hackust2016.herokuapp.com/create_game',
+    {
+      mode: $scope.game.type,
+      topic: $scope.game.topic,
+      host: current_player_id,
+      time_limit: $scope.game.time_limit,
+      word_limit: $scope.game.word_limit,
+      player_limit: $scope.game.player_limit,
+      turn_limit: $scope.game.turn_limit,
+      password: $scope.game.passphrase
+    }).then(function(result) {
+      console.log("Current game: " + result.data);
+      current_game_id = result.data.game_id;
+    }, function(error) {
+      console.log("", error);
+    })
+  }
 });
 
 app.run(function($ionicPlatform) {

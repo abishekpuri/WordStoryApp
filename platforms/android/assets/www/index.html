@@ -19,16 +19,19 @@
     <script>
     $(document).ready(function() {
       setTimeout(function() {
-        $(".word_story").animate({ 'marginBottom': '-300px' }, 1000);
+        $(".word_story").animate({ 'bottom': '60%' }, 1000);
       }, 2000);
+      setTimeout(function() {
+        $(".start_button").fadeIn(1000);
+      }, 3000);
     });
     </script>
   </head>
   <body ng-app="starter" class="platform-android platform-cordova platform-webview">
     <ion-nav-view class="slide-left-right"></ion-nav-view>
     <script id="start.html" type="text/ng-template">
-      <ion-view class="background" title="Home">
-        <ion-content class="padding" overflow-scroll="false">
+      <ion-view class="background" scroll="false" title="Home">
+        <ion-content scroll="false" class="padding">
           <div class="word_story_title">
             <img class="word_story" src="img/word_story.png">
           </div>
@@ -37,8 +40,8 @@
       </ion-view>
     </script>
     <script id="signup.html" type="text/ng-template">
-      <ion-view class="background" title="Sign Up">
-        <ion-content class="padding">
+      <ion-view class="background" scroll="false" title="Sign Up">
+        <ion-content class="padding" scroll="false">
           <div class="list list-inset">
             <label class="item item-input">
               <input type="text" ng-model="nick.name" placeholder="Nickname">
@@ -50,8 +53,8 @@
       </ion-view>
     </script>
     <script id="menu.html" type="text/ng-template">
-      <ion-view class="background" title="Menu">
-        <ion-content class="padding">
+      <ion-view class="background" scroll="false" title="Menu">
+        <ion-content class="padding" scroll="false">
           <a class="button" ui-sref="game-choice">Play Game</a>
           <a class="button" ui-sref="home">How to Play</a>
           <a class="button" ui-sref="home">Options</a>
@@ -60,7 +63,7 @@
       </ion-view>
     </script>
     <script id="game-choice.html" type="text/ng-template">
-      <ion-view class="background" title="Menu">
+      <ion-view class="background" scroll="false" title="Menu">
         <ion-content class="padding">
           <a class="button" ui-sref="create-game">Host</a>
           <a class="button" ui-sref="home">Join</a>
@@ -68,18 +71,39 @@
       </ion-view>
     </script>
     <script id="create-game.html" type="text/ng-template">
-      <ion-view class="background" title="Menu">
-        <ion-content class="padding">
+      <ion-view class="background" scroll="false" title="Menu">
+        <ion-content class="padding" scroll="false">
           <div class="list">
             <label class="item item-input">
               <span class="input-label">Game Type</span>
-              <input type="text" placeholder="Game type">
+              <input type="text" ng-model="game.type" placeholder="Game type">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Topic</span>
+              <input type="text" ng-model="game.topic" placeholder="Topic">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Time Limit</span>
+              <input type="text" ng-model="game.time_limit" placeholder="Time limit">
             </label>
             <label class="item item-input">
               <span class="input-label">Word Limit</span>
-              <input type="text" placeholder="Word limit">
+              <input type="text" ng-model="game.word_limit" placeholder="Word limit">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Player Limit</span>
+              <input type="text" ng-model="game.player_limit" placeholder="Player limit">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Per Turn Time Limit</span>
+              <input type="text" ng-model="game.turn_limit" placeholder="Turn limit">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Passphrase</span>
+              <input type="text" ng-model="game.passphrase" placeholder="Passphrase">
             </label>
           </div>
+          <a class="button" ng-click="submit_game_options()" ui-sref="home">Create Game</a>
         </ion-content>
       </ion-view>
     </script>
