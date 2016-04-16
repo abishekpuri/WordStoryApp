@@ -5,7 +5,27 @@
 // the 2nd parameter is an array of 'requires'
 var app = angular.module('starter', ['ionic'])
 var current_player_id = null;
+var current_player_nick = null;
 var current_game_id = null;
+
+app.run(function($ionicPlatform) {
+  $ionicPlatform.ready(function() {/*
+    if(window.cordova && window.cordova.plugins.Keyboard) {
+      // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+      // for form inputs)
+      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+
+      // Don't remove this line unless you know what you are doing. It stops the viewport
+      // from snapping when text inputs are focused. Ionic handles this internally for
+      // a much nicer keyboard experience.
+      cordova.plugins.Keyboard.disableScroll(true);
+    }*/
+
+    if(window.StatusBar) {
+      StatusBar.styleDefault();
+    }
+  });
+});
 
 app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -36,16 +56,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
     templateUrl: 'lobby.html',
     controller: 'lobby_controller'
   })
-  .state('gameList', {
-    url: 'gameList',
-    templateUrl: 'gameList.html',
-    controller: 'gameList_controller'
+  .state('game-list', {
+    url: 'game-list',
+    templateUrl: 'game-list.html',
+    controller: 'game_list_controller'
   })
 
   $urlRouterProvider.otherwise("/start");
 });
 
-app.controller('gameList_controller', function($scope, $http) {
+app.controller('game_list_controller', function($scope, $http) {
 
 });
 
@@ -54,10 +74,12 @@ app.controller('signup_controller', function($scope, $http) {
     name: ""
   };
   $scope.submit_nick = function() {
-    $http.post('https://hackust2016.herokuapp.com/create_player', { "nickname": $scope.nick.name })
+    $http.post('https://hackust2016.herokuapp.com/create_player',
+    { "nickname": $scope.nick.name })
     .then(function(result) {
       console.log("Result: " + JSON.stringify(result.data));
       current_player_id = result.data.player_id;
+      current_player_nick = $scope.nick.name;
     }, function(error) {
       console.log("error: " + JSON.stringify(error));
     });
@@ -66,7 +88,7 @@ app.controller('signup_controller', function($scope, $http) {
 
 app.controller('create_game_controller', function($scope, $http) {
   $scope.game = {
-    type: "",
+    type: "Normal",
     topic: "",
     time_limit: "",
     word_limit: "",
@@ -76,6 +98,16 @@ app.controller('create_game_controller', function($scope, $http) {
   };
 
   $scope.submit_game_options = function() {
+    console.log('', {
+      mode: $scope.game.type,
+      topic: $scope.game.topic,
+      host: current_player_id,
+      time_limit: $scope.game.time_limit,
+      word_limit: $scope.game.word_limit,
+      player_limit: $scope.game.player_limit,
+      turn_limit: $scope.game.turn_limit,
+      password: $scope.game.passphrase
+    });
     $http.post('https://hackust2016.herokuapp.com/create_game',
     {
       mode: $scope.game.type,
@@ -95,34 +127,18 @@ app.controller('create_game_controller', function($scope, $http) {
   }
 });
 
-app.controller('lobby_controller', function($scope,$http,$timeout) {
-  $scope.players = [current_player_id];
+app.controller('lobby_controller', function($scope, $http, $timeout) {
+  $scope.players = [current_player_nick];
   var longPoll = function() {
-    $http.post('https://hackust2016.herokuapp.com/request_next_player',{
-      'player_id': current_player_id
-    }).then(function(result){
+    $http.post('https://hackust2016.herokuapp.com/request_next_player',
+    { 'player_id': current_player_id },
+    { timeout: 1000000 }).then(function(result) {
       console.log('result');
-      $scope.players.append(result);
+      $scope.players = result.data;
       longPoll();
-    })
+    });
   }
-  //longPoll();
-
-});
-app.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    if(window.cordova && window.cordova.plugins.Keyboard) {
-      // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-      // for form inputs)
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-
-      // Don't remove this line unless you know what you are doing. It stops the viewport
-      // from snapping when text inputs are focused. Ionic handles this internally for
-      // a much nicer keyboard experience.
-      cordova.plugins.Keyboard.disableScroll(true);
-    }
-    if(window.StatusBar) {
-      StatusBar.styleDefault();
-    }
+  $scope.$on('$ionicView.enter', function() {
+    longPoll();
   });
-})
+});

@@ -47,12 +47,12 @@
               <input type="text" ng-model="nick.name" placeholder="Nickname">
             </label>
           </div>
-          <a class="button" ui-sref="home">Cancel</a>
           <a class="button" ng-click="submit_nick()" ui-sref="menu">Submit</a>
+          <a class="button" ui-sref="home">Cancel</a>
         </ion-content>
       </ion-view>
     </script>
-    <script id="gameList.html" type="text/ng-template">
+    <script id="game-list.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Sign Up">
         <ion-content class="padding" scroll="false">
           <div ng-repeat="game in games">
@@ -85,7 +85,7 @@
       <ion-view class="background" scroll="false" title="Menu">
         <ion-content class="padding">
           <a class="button" ui-sref="create-game">Host</a>
-          <a class="button" ui-sref="gameList ">Join</a>
+          <a class="button" ui-sref="game-list">Join</a>
         </ion-content>
       </ion-view>
     </script>
@@ -93,16 +93,18 @@
       <ion-view class="background" scroll="false" title="Menu">
         <ion-content class="padding" scroll="false">
           <div class="list">
-            <label class="item item-input">
-              <span class="input-label">Game Type</span>
-              <input type="text" ng-model="game.type" placeholder="Game type">
+            <label class="item item-input item-select">
+              <div class = "input-label">Game Type</div>
+              <select ng-model="game.type">
+                 <option selected>Normal</option>
+              </select>
             </label>
             <label class="item item-input">
               <span class="input-label">Topic</span>
               <input type="text" ng-model="game.topic" placeholder="Topic">
             </label>
             <label class="item item-input">
-              <span class="input-label">Time Limit</span>
+              <span class="input-label">Time Limit (mins)</span>
               <input type="text" ng-model="game.time_limit" placeholder="Time limit">
             </label>
             <label class="item item-input">

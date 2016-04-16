@@ -9,6 +9,16 @@ body {
   background-size: cover;
 }
 
+.button {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .word_story_title
 {
   position: absolute;
