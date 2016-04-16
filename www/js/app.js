@@ -66,7 +66,18 @@ app.config(function($stateProvider, $urlRouterProvider) {
 });
 
 app.controller('game_list_controller', function($scope, $http) {
-
+  $scope.games = [];
+  var poll = function() {
+    $http.post('https://hackust2016.herokuapp.com/get_all_games',
+    { timeout: 5000 }).then(function(result) {
+      console.log(JSON.stringify(result));
+      //$scope.games.push('HELLO');
+      poll();
+    });
+  }
+  $scope.$on('$ionicView.enter', function() {
+    poll();
+  });
 });
 
 app.controller('signup_controller', function($scope, $http) {
