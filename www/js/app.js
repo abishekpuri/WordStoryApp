@@ -73,7 +73,7 @@ app.controller('create_game_controller', function($scope, $http) {
       turn_limit: $scope.game.turn_limit,
       password: $scope.game.passphrase
     }).then(function(result) {
-      console.log("Current game: " + result.data);
+      console.log("Current game: " + result.data.game_id);
       current_game_id = result.data.game_id;
     }, function(error) {
       console.log("", error);
