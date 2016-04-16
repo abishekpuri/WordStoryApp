@@ -52,6 +52,25 @@
         </ion-content>
       </ion-view>
     </script>
+    <script id="gameList.html" type="text/ng-template">
+      <ion-view class="background" scroll="false" title="Sign Up">
+        <ion-content class="padding" scroll="false">
+          <div ng-repeat="game in games">
+            <a class="button" ng-click="join_game()"> {{game}} </a>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
+    <script id="lobby.html" type="text/ng-template">
+      <ion-view class="background" scroll="false" title="Sign Up">
+        <ion-content class="padding" scroll="false">
+        <ul >
+          <li ng-repeat="player in players">
+            {{player}}
+          </li>
+        </ion-content>
+      </ion-view>
+    </script>
     <script id="menu.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Menu">
         <ion-content class="padding" scroll="false">
@@ -66,7 +85,7 @@
       <ion-view class="background" scroll="false" title="Menu">
         <ion-content class="padding">
           <a class="button" ui-sref="create-game">Host</a>
-          <a class="button" ui-sref="home">Join</a>
+          <a class="button" ui-sref="gameList ">Join</a>
         </ion-content>
       </ion-view>
     </script>
@@ -103,7 +122,7 @@
               <input type="text" ng-model="game.passphrase" placeholder="Passphrase">
             </label>
           </div>
-          <a class="button" ng-click="submit_game_options()" ui-sref="home">Create Game</a>
+          <a class="button" ng-click="submit_game_options()" ui-sref="lobby">Create Game</a>
         </ion-content>
       </ion-view>
     </script>

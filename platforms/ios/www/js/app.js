@@ -31,8 +31,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
     templateUrl: 'create-game.html',
     controller: 'create_game_controller'
   })
+  .state('lobby', {
+    url: 'lobby',
+    templateUrl: 'lobby.html',
+    controller: 'lobby_controller'
+  })
+  .state('gameList', {
+    url: 'gameList',
+    templateUrl: 'gameList.html',
+    controller: 'gameList_controller'
+  })
 
   $urlRouterProvider.otherwise("/start");
+});
+
+app.controller('gameList_controller', function($scope, $http) {
+
 });
 
 app.controller('signup_controller', function($scope, $http) {
@@ -81,6 +95,20 @@ app.controller('create_game_controller', function($scope, $http) {
   }
 });
 
+app.controller('lobby_controller', function($scope,$http,$timeout) {
+  $scope.players = [current_player_id];
+  var longPoll = function() {
+    $http.post('https://hackust2016.herokuapp.com/request_next_player',{
+      'player_id': current_player_id
+    }).then(function(result){
+      console.log('result');
+      $scope.players.append(result);
+      longPoll();
+    })
+  }
+  //longPoll();
+
+});
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
