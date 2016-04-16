@@ -7,6 +7,8 @@ var app = angular.module('starter', ['ionic'])
 var current_player_id = null;
 var current_player_nick = null;
 var current_game_id = null;
+var current_list_of_players;
+var is_host = false;
 
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {/*
@@ -21,7 +23,7 @@ app.run(function($ionicPlatform) {
       cordova.plugins.Keyboard.disableScroll(true);
     }*/
 
-    if(window.StatusBar) {
+    if (window.StatusBar) {
       StatusBar.styleDefault();
     }
   });
@@ -61,18 +63,45 @@ app.config(function($stateProvider, $urlRouterProvider) {
     templateUrl: 'game-list.html',
     controller: 'game_list_controller'
   })
+  .state('game', {
+    url: 'game',
+    templateUrl: 'game.html',
+    controller: 'game_controller'
+  })
 
   $urlRouterProvider.otherwise("/start");
 });
 
-app.controller('game_list_controller', function($scope, $http) {
+app.controller('game_list_controller', function($scope, $http, $state) {
   $scope.games = [];
+  $scope.join_game = function(game_id) {
+    is_host = false;
+    $http.post('https://hackust2016.herokuapp.com/join_game',
+    {
+      player_id: current_player_id,
+      game_id: game_id
+    }).then(function(result) {
+      console.log("result: " + JSON.stringify(result.data));
+      var abc = [];
+      for (var i = 0; i < result.data.length; ++i) {
+        abc.push(result.data[i].nickname);
+      }
+      current_game_id = game_id;
+      current_list_of_players = abc;
+      console.log("ABC: " + JSON.stringify(abc));
+      $state.go('lobby');
+    }, function(error) {
+      console.log("", error);
+    });
+  }
   var poll = function() {
-    $http.post('https://hackust2016.herokuapp.com/get_all_games',
-    { timeout: 5000 }).then(function(result) {
+    $http.post('https://hackust2016.herokuapp.com/get_all_games')
+    .then(function(result) {
       console.log(JSON.stringify(result));
-      //$scope.games.push('HELLO');
-      poll();
+      $scope.games = result.data;
+      setTimeout(function() {
+        poll();
+      }, 5000);
     });
   }
   $scope.$on('$ionicView.enter', function() {
@@ -97,7 +126,7 @@ app.controller('signup_controller', function($scope, $http) {
   };
 });
 
-app.controller('create_game_controller', function($scope, $http) {
+app.controller('create_game_controller', function($scope, $http, $state) {
   $scope.game = {
     type: "Normal",
     topic: "",
@@ -109,16 +138,6 @@ app.controller('create_game_controller', function($scope, $http) {
   };
 
   $scope.submit_game_options = function() {
-    console.log('', {
-      mode: $scope.game.type,
-      topic: $scope.game.topic,
-      host: current_player_id,
-      time_limit: $scope.game.time_limit,
-      word_limit: $scope.game.word_limit,
-      player_limit: $scope.game.player_limit,
-      turn_limit: $scope.game.turn_limit,
-      password: $scope.game.passphrase
-    });
     $http.post('https://hackust2016.herokuapp.com/create_game',
     {
       mode: $scope.game.type,
@@ -132,14 +151,18 @@ app.controller('create_game_controller', function($scope, $http) {
     }).then(function(result) {
       console.log("Current game: " + result.data.game_id);
       current_game_id = result.data.game_id;
+      is_host = true;
+      current_list_of_players = [current_player_nick];
+      $state.go('lobby');
     }, function(error) {
       console.log("", error);
     })
   }
 });
 
-app.controller('lobby_controller', function($scope, $http, $timeout) {
-  $scope.players = [current_player_nick];
+app.controller('lobby_controller', function($scope, $http, $timeout, $state) {
+  $scope.players = current_list_of_players;
+  $scope.is_not_host = !is_host;
   var longPoll = function() {
     $http.post('https://hackust2016.herokuapp.com/request_next_player',
     { 'player_id': current_player_id },
@@ -149,7 +172,35 @@ app.controller('lobby_controller', function($scope, $http, $timeout) {
       longPoll();
     });
   }
+  var shortPoll = function () {
+    $http.post('https://hackust2016.herokuapp.com/get_game_status',
+    { game_id: current_game_id }).then(function(result) {
+      console.log("current status result: " + JSON.stringify(result.data));
+      if (result.data.current_status === "started") {
+        $state.go('game');
+      } else {
+        setTimeout(function() {
+          shortPoll();
+        }, 1000);
+      }
+    }, function(error) {
+      setTimeout(function() {
+        shortPoll();
+      }, 1000);
+    });
+  }
+
+  $scope.start_game = function() {
+    $http.post('https://hackust2016.herokuapp.com/start_game',
+    { game_id: current_game_id }).then(function(result) {
+      console.log("start game result: " + JSON.stringify(result.data));
+    })
+  }
   $scope.$on('$ionicView.enter', function() {
     longPoll();
+    shortPoll();
   });
+});
+
+app.controller('game_controller', function($scope) {
 });
