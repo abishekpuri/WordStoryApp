@@ -141,7 +141,8 @@
         <ion-content class="padding">
           <h1> Created Story Below : </h1>
           <h2 ng-repeat='word in word_array'> {{ word }} </h2>
-          <a class="button" ng-show="is_current_turn" ng-click="add_word()">Add A</a>
+          <input type="text" ng-model="story.word">
+          <a class="button" ng-show="is_current_turn" ng-click="add_word()">Add Word</a>
         </ion-content>
       </ion-view>
     </script>
