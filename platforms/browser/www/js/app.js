@@ -11,6 +11,7 @@ var current_list_of_players;
 var is_host = false;
 var host_id = null;
 var in_game = false;
+
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {/*
     if(window.cordova && window.cordova.plugins.Keyboard) {
@@ -203,7 +204,7 @@ app.controller('lobby_controller', function($scope, $http, $timeout, $state) {
   $scope.start_game = function() {
     $http.post('https://hackust2016.herokuapp.com/start_game',
     { game_id: current_game_id }).then(function(result) {
-    })
+    });
   }
   $scope.$on('$ionicView.enter', function() {
     longPoll();
@@ -222,6 +223,7 @@ app.controller('game_controller', function($scope, $http) {
     { game_id: current_game_id }).then(function(result) {
       if (current_turn_player !== result.data.player_id) {
         console.log("change player");
+        $scope.word_array_as_string += result.data.word + " ";
         words_array.push(result.data.word);
         $scope.word_array = words_array;
         current_turn_player = result.data.player_id;
@@ -251,11 +253,13 @@ app.controller('game_controller', function($scope, $http) {
     });
   }
 
+
   $scope.$on('$ionicView.enter', function() {
     console.log("Is host: " + is_host);
     words_array = [];
     in_game = true;
     $scope.is_current_turn = is_host;
+    $scope.word_array_as_string = "";
     poll();
   });
 });

@@ -31,7 +31,7 @@
     <ion-nav-view class="slide-left-right"></ion-nav-view>
     <script id="start.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Home">
-        <ion-content scroll="false" class="padding">
+        <ion-content class="padding" scroll="false">
           <div class="word_story_title">
             <img class="word_story" src="img/word_story.png">
           </div>
@@ -70,11 +70,13 @@
     <script id="lobby.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Sign Up">
         <ion-content class="padding" scroll="false">
-        <ul>
-          <li ng-repeat="player in players">
-            {{player}}
-          </li>
-        </ul>
+        <ion-scroll zooming="false" direction = "y" style = "width: 100%; height: calc(100% - 150px); background-color: rgba(160, 130, 190, 0.4);">
+          <ul class="list">
+            <li class="item" ng-repeat="player in players">
+              {{player}}
+            </li>
+          </ul>
+        </ion-scroll>
         <a class="item" ng-hide="is_not_host" ng-click="start_game()">Start Game</a>
         </ion-content>
       </ion-view>
@@ -91,7 +93,7 @@
     </script>
     <script id="game-choice.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Menu">
-        <ion-content class="padding">
+        <ion-content class="padding" scroll="false">
           <a class="button" ui-sref="create-game">Host</a>
           <a class="button" ui-sref="game-list">Join</a>
         </ion-content>
@@ -138,11 +140,23 @@
     </script>
     <script id="game.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Menu">
-        <ion-content class="padding">
-          <h1> Created Story Below : </h1>
-          <h2 ng-repeat='word in word_array'> {{ word }} </h2>
-          <input type="text" ng-model="story.word">
-          <a class="button" ng-show="is_current_turn" ng-click="add_word()">Add Word</a>
+        <ion-content class="padding" scroll="false">
+          <div class="bar bar-header" style="position: relative; margin-bottom: 10px;">
+            <h1 class="title">Story</h1>
+          </div>
+          <ion-scroll zooming="false" direction = "y" style = "width: 100%; height: calc(100% - 150px); background-color: rgba(160, 130, 190, 0.4);">
+            <div>{{ word_array_as_string }}</div>
+          </ion-scroll>
+          <div class="list" ng-show="is_current_turn">
+            <div class="item item-input-inset">
+              <label class="item-input-wrapper">
+                <input type="text" ng-model="story.word" placeholder="Add word">
+              </label>
+              <button ng-click="add_word()" class="button button-small">
+                Submit
+              </button>
+            </div>
+          </div>
         </ion-content>
       </ion-view>
     </script>
