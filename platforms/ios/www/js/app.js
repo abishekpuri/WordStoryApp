@@ -9,7 +9,7 @@ var current_player_nick = null;
 var current_game_id = null;
 var current_list_of_players;
 var is_host = false;
-
+var host_id = null;
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {/*
     if(window.cordova && window.cordova.plugins.Keyboard) {
@@ -83,6 +83,7 @@ app.controller('game_list_controller', function($scope, $http, $state) {
     }).then(function(result) {
       console.log("result: " + JSON.stringify(result.data));
       var abc = [];
+      host_id = result.data[0].player_id;
       for (var i = 0; i < result.data.length; ++i) {
         abc.push(result.data[i].nickname);
       }
@@ -152,6 +153,7 @@ app.controller('create_game_controller', function($scope, $http, $state) {
       console.log("Current game: " + result.data.game_id);
       current_game_id = result.data.game_id;
       is_host = true;
+      host_id = current_player_id;
       current_list_of_players = [current_player_nick];
       $state.go('lobby');
     }, function(error) {
@@ -159,6 +161,8 @@ app.controller('create_game_controller', function($scope, $http, $state) {
     })
   }
 });
+
+var current_turn_player = null;
 
 app.controller('lobby_controller', function($scope, $http, $timeout, $state) {
   $scope.players = current_list_of_players;
@@ -177,6 +181,7 @@ app.controller('lobby_controller', function($scope, $http, $timeout, $state) {
     { game_id: current_game_id }).then(function(result) {
       console.log("current status result: " + JSON.stringify(result.data));
       if (result.data.current_status === "started") {
+        current_turn_player = host_id;
         $state.go('game');
       } else {
         setTimeout(function() {
@@ -193,7 +198,6 @@ app.controller('lobby_controller', function($scope, $http, $timeout, $state) {
   $scope.start_game = function() {
     $http.post('https://hackust2016.herokuapp.com/start_game',
     { game_id: current_game_id }).then(function(result) {
-      console.log("start game result: " + JSON.stringify(result.data));
     })
   }
   $scope.$on('$ionicView.enter', function() {
@@ -201,6 +205,46 @@ app.controller('lobby_controller', function($scope, $http, $timeout, $state) {
     shortPoll();
   });
 });
+var word_array = [];
+app.controller('game_controller', function($scope, $http) {
+  var poll = function() {
+    console.log("currently polling");
+    $http.post('https://hackust2016.herokuapp.com/get_word',
+    { game_id: current_game_id }).then(function(result) {
+      if (current_turn_player !== result.data.player_id) {
+        console.log("change player");
+        word_array.push(result.data.word);
+        current_turn_player = result.data.player_id;
+      }
+      if (result.data.player_id === current_player_id) {
+        $scope.is_current_turn = true;
+      } else {
+        $scope.is_current_turn = false;
+      }
+      setTimeout(function() {
+        poll();
+      }, 1000);
+    }, function(error) {
+      setTimeout(function() {
+        poll();
+      }, 1000);
+    });
+  }
 
-app.controller('game_controller', function($scope) {
+  $scope.add_word = function() {
+    console.log("add word");
+    $http.post('https://hackust2016.herokuapp.com/add_word',
+    { word: "a", player_id: current_player_id, game_id: current_game_id })
+    .then(function(result) {
+      console.log("success");
+    }, function(error) {
+      console.log("", error);
+    });
+  }
+
+  $scope.$on('$ionicView.enter', function() {
+    console.log("Is host: " + is_host);
+    $scope.is_current_turn = is_host;
+    poll();
+  });
 });

@@ -139,7 +139,7 @@
     <script id="game.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Menu">
         <ion-content class="padding">
-          <a class="button" ui-sref="create-game">Game</a>
+          <a class="button" ng-show="is_current_turn" ng-click="add_word()">Add A</a>
         </ion-content>
       </ion-view>
     </script>
