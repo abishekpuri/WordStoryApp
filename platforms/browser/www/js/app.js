@@ -214,6 +214,7 @@ app.controller('game_controller', function($scope, $http) {
     { game_id: current_game_id }).then(function(result) {
       if (current_turn_player !== result.data.player_id) {
         console.log("change player");
+        alert(result.data.word);
         word_array.push(result.data.word);
         current_turn_player = result.data.player_id;
       }
