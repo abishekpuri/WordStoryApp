@@ -139,6 +139,8 @@
     <script id="game.html" type="text/ng-template">
       <ion-view class="background" scroll="false" title="Menu">
         <ion-content class="padding">
+          <h1> Created Story Below : </h1>
+          <h2 ng-repeat='word in word_array'> {{ word }} </h2>
           <a class="button" ng-show="is_current_turn" ng-click="add_word()">Add A</a>
         </ion-content>
       </ion-view>

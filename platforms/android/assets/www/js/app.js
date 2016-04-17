@@ -205,8 +205,9 @@ app.controller('lobby_controller', function($scope, $http, $timeout, $state) {
     shortPoll();
   });
 });
-var word_array = [];
+
 app.controller('game_controller', function($scope, $http) {
+  var word_array = [];
   var poll = function() {
     console.log("currently polling");
     $http.post('https://hackust2016.herokuapp.com/get_word',
